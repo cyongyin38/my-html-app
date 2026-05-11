@@ -1,0 +1,1832 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+<title>JUE SPACE · 身心靈療癒 APP</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600&family=Noto+Sans+TC:wght@300;400;500;600;700&family=Noto+Serif+TC:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  /* ---------- Design Tokens ---------- */
+  :root{
+    /* 淡藕色系 (lotus root) */
+    --lotus-50:  #FBF4F1;
+    --lotus-100: #F2E2DC;
+    --lotus-200: #E8CCC4;
+    --lotus-300: #D9B8B0;   /* 主淡藕色 */
+    --lotus-400: #C9A39A;
+    --lotus-500: #B89690;
+    --lotus-600: #9C7B74;
+
+    /* 淺棕色系 */
+    --brown-50:  #F7F1EA;
+    --brown-100: #EADBC9;
+    --brown-200: #D6BFA6;
+    --brown-300: #BFA483;
+    --brown-400: #A88A66;   /* 主淺棕色 */
+    --brown-500: #8B6F4E;
+    --brown-600: #6B5238;
+
+    /* 白色 / 中性 */
+    --white:     #FFFFFF;
+    --cream:     #FAF6F2;
+    --ivory:     #F4ECE4;
+    --line:      #E8DDD4;
+
+    --ink:       #3D2E26;
+    --ink-soft:  #6B5B53;
+    --ink-mute:  #9C8D85;
+
+    /* Shadow & Radius */
+    --r-sm: 12px;
+    --r-md: 18px;
+    --r-lg: 26px;
+    --r-xl: 36px;
+    --shadow-soft: 0 10px 30px -12px rgba(139, 111, 78, .18);
+    --shadow-md:   0 18px 40px -18px rgba(139, 111, 78, .28);
+    --shadow-lg:   0 30px 60px -20px rgba(61, 46, 38, .22);
+  }
+
+  *,*::before,*::after{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{
+    font-family: 'Noto Sans TC', -apple-system, sans-serif;
+    background:
+      radial-gradient(1200px 800px at 10% -10%, var(--lotus-100), transparent 60%),
+      radial-gradient(900px 700px at 110% 110%, var(--brown-100), transparent 60%),
+      var(--cream);
+    color:var(--ink);
+    min-height:100vh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:24px 16px;
+    -webkit-font-smoothing:antialiased;
+  }
+  .serif{ font-family:'Noto Serif TC', 'Cormorant Garamond', serif; letter-spacing:.02em; }
+  .display{ font-family:'Cormorant Garamond', 'Noto Serif TC', serif; letter-spacing:.01em; }
+
+  /* ---------- Phone Frame ---------- */
+  .phone{
+    width: 390px;
+    height: 844px;
+    background: var(--white);
+    border-radius: 48px;
+    border: 12px solid #1a1414;
+    box-shadow: var(--shadow-lg), inset 0 0 0 2px #2b2220;
+    position:relative;
+    overflow:hidden;
+  }
+  .notch{
+    position:absolute; top:10px; left:50%; transform:translateX(-50%);
+    width:120px; height:30px; background:#1a1414; border-radius:20px; z-index:50;
+  }
+  .status-bar{
+    position:absolute; top:0; left:0; right:0; height:44px;
+    display:flex; justify-content:space-between; align-items:flex-end;
+    padding: 0 28px 4px; font-size:14px; font-weight:600; z-index:40;
+    color: var(--ink);
+  }
+  .status-bar .icons{ display:flex; gap:6px; align-items:center; }
+
+  /* ---------- Screen System ---------- */
+  .screens{
+    position:absolute; inset:44px 0 86px 0; overflow:hidden;
+  }
+  .screen{
+    position:absolute; inset:0;
+    overflow-y:auto; overflow-x:hidden;
+    opacity:0; transform: translateX(20px);
+    transition: opacity .35s ease, transform .35s ease;
+    pointer-events:none;
+    padding-bottom: 24px;
+    scrollbar-width: none;
+  }
+  .screen::-webkit-scrollbar{ display:none }
+  .screen.active{
+    opacity:1; transform:translateX(0); pointer-events:auto;
+  }
+
+  /* ---------- Bottom Tab Bar ---------- */
+  .tabbar{
+    position:absolute; left:0; right:0; bottom:0; height:86px;
+    background: rgba(255,255,255,.85);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-top:1px solid var(--line);
+    display:flex; align-items:flex-start; justify-content:space-around;
+    padding-top:10px;
+    z-index:30;
+  }
+  .tab{
+    background:none; border:none; cursor:pointer;
+    display:flex; flex-direction:column; align-items:center; gap:4px;
+    color:var(--ink-mute); padding:6px 10px; min-width:62px;
+    font-family:inherit;
+    transition: color .2s;
+  }
+  .tab svg{ width:22px; height:22px; stroke-width:1.6; }
+  .tab span{ font-size:10.5px; letter-spacing:.05em; }
+  .tab.active{ color:var(--brown-500); }
+  .tab.active .dot{
+    width:4px; height:4px; border-radius:50%;
+    background:var(--lotus-400); margin-top:1px;
+  }
+
+  /* ---------- Common UI ---------- */
+  .page-pad{ padding: 8px 22px 24px; }
+  .h-row{ display:flex; align-items:center; justify-content:space-between; }
+  .pill{
+    display:inline-flex; align-items:center; gap:6px;
+    padding: 5px 12px; border-radius:999px;
+    background: var(--lotus-100); color:var(--brown-500);
+    font-size:11px; font-weight:500; letter-spacing:.06em;
+  }
+  .pill.brown{ background:var(--brown-100); color:var(--brown-600); }
+  .pill.ghost{ background:transparent; border:1px solid var(--line); color:var(--ink-soft); }
+
+  .btn{
+    display:inline-flex; align-items:center; justify-content:center; gap:8px;
+    padding: 14px 22px; border-radius: 999px; border:none; cursor:pointer;
+    font-family:inherit; font-size:14px; font-weight:500; letter-spacing:.05em;
+    transition: transform .15s, box-shadow .2s, background .2s;
+  }
+  .btn:active{ transform:scale(.97); }
+  .btn-primary{
+    background: linear-gradient(135deg, var(--brown-400), var(--brown-500));
+    color:var(--white);
+    box-shadow: 0 10px 24px -10px rgba(139,111,78,.6);
+  }
+  .btn-secondary{
+    background: var(--lotus-200); color: var(--brown-600);
+  }
+  .btn-ghost{
+    background: transparent; border:1px solid var(--line); color:var(--ink-soft);
+  }
+  .btn-block{ width:100%; }
+
+  .card{
+    background: var(--white);
+    border-radius: var(--r-md);
+    box-shadow: var(--shadow-soft);
+    border:1px solid rgba(232, 221, 212, .6);
+  }
+
+  .section-title{
+    font-family:'Noto Serif TC', serif;
+    font-size:18px; font-weight:500; color:var(--ink);
+    letter-spacing:.04em;
+  }
+  .section-sub{
+    font-size:12px; color:var(--ink-mute); letter-spacing:.08em; text-transform:uppercase;
+  }
+  .link{ color:var(--brown-500); font-weight:500; cursor:pointer; font-size:13px;}
+
+  /* ---------- Input ---------- */
+  .field{ margin-bottom:14px; }
+  .field label{
+    display:block; font-size:11px; letter-spacing:.12em;
+    color:var(--ink-mute); margin-bottom:6px; text-transform:uppercase; font-weight:500;
+  }
+  .field input{
+    width:100%; padding:14px 16px;
+    background: var(--cream);
+    border:1px solid transparent;
+    border-radius: 14px;
+    font-family:inherit; font-size:14px; color:var(--ink);
+    transition: border-color .2s, background .2s;
+  }
+  .field input:focus{
+    outline:none; border-color:var(--lotus-300); background:var(--white);
+  }
+
+  /* ---------- Welcome / Login screens ---------- */
+  .welcome-bg{
+    position:absolute; inset:0;
+    background:
+      radial-gradient(600px 400px at 80% 10%, var(--lotus-200), transparent 60%),
+      radial-gradient(500px 600px at 10% 90%, var(--brown-200), transparent 60%),
+      linear-gradient(180deg, var(--cream), var(--lotus-50));
+  }
+  .welcome-inner{
+    position:relative; height:100%; display:flex; flex-direction:column;
+    justify-content:space-between; padding:80px 30px 30px;
+  }
+  .logo-mark{
+    width:64px; height:64px; border-radius:50%;
+    background: linear-gradient(135deg, var(--lotus-300), var(--brown-300));
+    display:flex; align-items:center; justify-content:center;
+    color:var(--white); font-family:'Cormorant Garamond', serif;
+    font-size:20px; font-weight:600; letter-spacing:.08em;
+    box-shadow: 0 12px 24px -8px rgba(168,138,102,.45);
+  }
+  .welcome-title{
+    font-family:'Cormorant Garamond', 'Noto Serif TC', serif;
+    font-size:46px; font-weight:400; line-height:1.1; color:var(--ink);
+    margin: 24px 0 10px;
+  }
+  .welcome-title em{ font-style:italic; color:var(--brown-500); }
+  .welcome-sub{
+    font-size:14px; line-height:1.7; color:var(--ink-soft); max-width:280px;
+  }
+  .social-row{ display:flex; gap:10px; margin-top:14px; }
+  .social-btn{
+    flex:1; aspect-ratio: 3.2 / 1; border-radius:14px;
+    background:var(--white); border:1px solid var(--line);
+    display:flex; align-items:center; justify-content:center;
+    cursor:pointer; transition: transform .15s;
+  }
+  .social-btn:active{ transform:scale(.96); }
+  .divider{
+    display:flex; align-items:center; gap:10px; margin: 18px 0 14px;
+    color:var(--ink-mute); font-size:11px; letter-spacing:.12em;
+  }
+  .divider::before, .divider::after{
+    content:''; flex:1; height:1px; background:var(--line);
+  }
+
+  /* ---------- Home Carousel ---------- */
+  .home-greet{
+    padding: 14px 22px 8px;
+  }
+  .greet-name{
+    font-family:'Noto Serif TC', serif;
+    font-size:22px; font-weight:500; color:var(--ink);
+  }
+  .greet-sub{ font-size:13px; color:var(--ink-soft); margin-top:2px; }
+
+  .carousel{
+    position:relative;
+    padding: 8px 22px 0;
+  }
+  .carousel-track{
+    display:flex; gap:14px;
+    overflow-x:auto; scroll-snap-type: x mandatory;
+    scrollbar-width:none; padding-bottom:12px;
+  }
+  .carousel-track::-webkit-scrollbar{ display:none }
+  .slide{
+    flex: 0 0 88%;
+    scroll-snap-align: center;
+    height: 200px;
+    border-radius: var(--r-lg);
+    padding: 22px;
+    color:var(--white);
+    position:relative; overflow:hidden;
+    display:flex; flex-direction:column; justify-content:flex-end;
+    box-shadow: var(--shadow-md);
+  }
+  .slide-1{
+    background:
+      radial-gradient(circle at 80% 20%, rgba(255,255,255,.25), transparent 50%),
+      linear-gradient(135deg, #C9A39A, #8B6F4E);
+  }
+  .slide-2{
+    background:
+      radial-gradient(circle at 20% 80%, rgba(255,255,255,.2), transparent 50%),
+      linear-gradient(135deg, #D9B8B0, #A88A66);
+  }
+  .slide-3{
+    background:
+      radial-gradient(circle at 50% 0%, rgba(255,255,255,.22), transparent 55%),
+      linear-gradient(135deg, #B89690, #6B5238);
+  }
+  .slide-tag{
+    position:absolute; top:18px; left:18px;
+    padding:5px 12px; background: rgba(255,255,255,.22);
+    backdrop-filter: blur(10px);
+    border-radius: 999px; font-size:11px; letter-spacing:.1em;
+  }
+  .slide-title{
+    font-family:'Noto Serif TC', serif;
+    font-size:22px; font-weight:500; line-height:1.3; margin-bottom:6px;
+  }
+  .slide-sub{ font-size:12px; opacity:.85; letter-spacing:.04em; }
+  .slide-deco{
+    position:absolute; right:-20px; top:-20px;
+    width:140px; height:140px; border-radius:50%;
+    background: radial-gradient(circle, rgba(255,255,255,.18), transparent 70%);
+  }
+  .dots{
+    display:flex; justify-content:center; gap:6px; padding: 4px 0 12px;
+  }
+  .dots span{
+    width:6px; height:6px; border-radius:50%;
+    background:var(--lotus-200); transition: all .3s;
+  }
+  .dots span.active{ width:18px; background:var(--brown-400); border-radius:3px; }
+
+  /* ---------- Quick actions ---------- */
+  .quick-grid{
+    display:grid; grid-template-columns: repeat(4, 1fr);
+    gap:10px; padding: 6px 22px 18px;
+  }
+  .quick{
+    background: var(--white);
+    border-radius: 18px;
+    padding: 14px 6px;
+    text-align:center; cursor:pointer;
+    box-shadow: var(--shadow-soft);
+    border:1px solid rgba(232, 221, 212, .6);
+  }
+  .quick-ic{
+    width:36px; height:36px; margin:0 auto 8px;
+    background: var(--lotus-100); border-radius: 12px;
+    display:flex; align-items:center; justify-content:center;
+    color: var(--brown-500);
+  }
+  .quick-ic.b2{ background:var(--brown-100); }
+  .quick-ic.b3{ background:var(--lotus-200); }
+  .quick-ic.b4{ background:var(--ivory); }
+  .quick span{ font-size:11px; color:var(--ink); }
+
+  /* ---------- List items ---------- */
+  .item{
+    display:flex; gap:14px; padding:12px;
+    background: var(--white); border-radius: var(--r-md);
+    margin: 0 22px 12px; cursor:pointer;
+    box-shadow: var(--shadow-soft); border:1px solid rgba(232,221,212,.5);
+  }
+  .item-img{
+    width: 84px; height: 84px; flex-shrink:0;
+    border-radius: 14px;
+    background-size:cover; background-position:center;
+  }
+  .ig-1{ background: linear-gradient(135deg, #D9B8B0, #B89690); }
+  .ig-2{ background: linear-gradient(135deg, #BFA483, #8B6F4E); }
+  .ig-3{ background: linear-gradient(135deg, #E8CCC4, #C9A39A); }
+  .ig-4{ background: linear-gradient(135deg, #D6BFA6, #A88A66); }
+  .ig-5{ background: linear-gradient(135deg, #E8DDD4, #BFA483); }
+  .item-body{ flex:1; display:flex; flex-direction:column; justify-content:space-between; min-width:0; }
+  .item-title{
+    font-family:'Noto Serif TC', serif;
+    font-size:14.5px; font-weight:500; color:var(--ink); line-height:1.35;
+  }
+  .item-meta{ font-size:11.5px; color:var(--ink-mute); }
+  .item-foot{ display:flex; align-items:center; justify-content:space-between; }
+  .price{ font-family:'Cormorant Garamond', serif; font-size:18px; font-weight:600; color:var(--brown-500); }
+  .price small{ font-size:11px; font-weight:400; color:var(--ink-mute); margin-left:2px; }
+
+  /* ---------- Course detail / progress ---------- */
+  .hero-img{
+    margin: 0 22px;
+    height: 200px; border-radius: var(--r-lg);
+    background: linear-gradient(135deg, #D9B8B0, #8B6F4E);
+    position:relative; overflow:hidden;
+    box-shadow: var(--shadow-md);
+  }
+  .hero-img::after{
+    content:''; position:absolute; inset:0;
+    background: radial-gradient(circle at 70% 30%, rgba(255,255,255,.2), transparent 50%);
+  }
+  .play-btn{
+    position:absolute; bottom:16px; right:16px;
+    width:48px; height:48px; border-radius:50%;
+    background:rgba(255,255,255,.95);
+    display:flex; align-items:center; justify-content:center;
+    box-shadow: var(--shadow-md);
+    color: var(--brown-500);
+  }
+  .progress{
+    height:6px; background:var(--lotus-100); border-radius:6px; overflow:hidden;
+    margin-top:8px;
+  }
+  .progress-fill{ height:100%; background: linear-gradient(90deg, var(--lotus-400), var(--brown-400)); border-radius:6px; }
+
+  .chapter{
+    display:flex; gap:14px; align-items:center;
+    padding: 12px 14px; background:var(--cream);
+    border-radius:14px; margin-bottom:8px;
+  }
+  .chapter .num{
+    width:30px; height:30px; border-radius:50%;
+    background:var(--white); color:var(--brown-500);
+    display:flex; align-items:center; justify-content:center;
+    font-family:'Cormorant Garamond', serif; font-size:14px; font-weight:600;
+    border:1px solid var(--line);
+  }
+  .chapter.done .num{ background:var(--brown-400); color:var(--white); border-color:var(--brown-400); }
+  .chapter .info{ flex:1; }
+  .chapter .info .t{ font-size:13px; color:var(--ink); font-weight:500; }
+  .chapter .info .s{ font-size:11px; color:var(--ink-mute); margin-top:2px; }
+  .chapter svg{ color:var(--ink-mute); }
+
+  /* ---------- Shop / Product grid ---------- */
+  .product-grid{
+    display:grid; grid-template-columns: 1fr 1fr; gap:12px;
+    padding: 8px 22px 24px;
+  }
+  .product{
+    background:var(--white); border-radius:18px;
+    overflow:hidden; cursor:pointer;
+    box-shadow:var(--shadow-soft); border:1px solid rgba(232,221,212,.5);
+  }
+  .product-img{
+    height:130px;
+  }
+  .p1{ background: linear-gradient(135deg, #F2E2DC, #C9A39A); }
+  .p2{ background: linear-gradient(135deg, #EADBC9, #BFA483); }
+  .p3{ background: linear-gradient(135deg, #E8CCC4, #B89690); }
+  .p4{ background: linear-gradient(135deg, #D6BFA6, #8B6F4E); }
+  .product-info{ padding:12px; }
+  .product-info .t{ font-size:13px; font-weight:500; color:var(--ink); margin-bottom:2px; line-height:1.3; }
+  .product-info .s{ font-size:11px; color:var(--ink-mute); margin-bottom:6px; }
+  .product-info .p{ font-family:'Cormorant Garamond', serif; font-size:17px; color:var(--brown-500); font-weight:600; }
+
+  /* ---------- Cart ---------- */
+  .cart-row{
+    display:flex; gap:12px; padding:12px;
+    background:var(--white); border-radius:16px; margin-bottom:10px;
+    box-shadow:var(--shadow-soft);
+  }
+  .cart-row .item-img{ width:64px; height:64px; }
+  .qty{
+    display:inline-flex; align-items:center; gap:8px;
+    background:var(--cream); border-radius:999px; padding:4px 4px;
+  }
+  .qty button{
+    width:24px; height:24px; border-radius:50%; border:none;
+    background:var(--white); color:var(--brown-500); cursor:pointer;
+    font-size:14px; font-family:inherit; box-shadow:var(--shadow-soft);
+  }
+  .qty span{ font-size:13px; min-width:18px; text-align:center; }
+  .summary{ padding: 12px 16px; background:var(--cream); border-radius:16px; }
+  .summary div{ display:flex; justify-content:space-between; padding:6px 0; font-size:13px; color:var(--ink-soft); }
+  .summary div.total{ font-weight:600; color:var(--ink); border-top:1px dashed var(--line); margin-top:6px; padding-top:12px; font-size:15px; }
+  .summary div.total .price{ font-size:22px; }
+
+  /* ---------- Checkout payment ---------- */
+  .pay-method{
+    display:flex; gap:10px; align-items:center;
+    padding:14px 16px; background:var(--white);
+    border-radius:14px; margin-bottom:8px;
+    border:1px solid transparent; cursor:pointer;
+    box-shadow:var(--shadow-soft);
+    transition: border-color .2s;
+  }
+  .pay-method.active{ border-color:var(--brown-400); background:var(--lotus-50); }
+  .pay-method .logo{
+    width:42px; height:42px; border-radius:10px;
+    background:var(--cream); display:flex; align-items:center; justify-content:center;
+    font-size:11px; font-weight:700; letter-spacing:-.02em;
+  }
+  .pay-method .t{ flex:1; font-size:13px; color:var(--ink); font-weight:500; }
+  .pay-method .s{ font-size:11px; color:var(--ink-mute); }
+  .radio{
+    width:18px; height:18px; border-radius:50%;
+    border:1.5px solid var(--line);
+  }
+  .pay-method.active .radio{
+    border-color: var(--brown-400);
+    background: radial-gradient(circle, var(--brown-400) 40%, transparent 45%);
+  }
+
+  /* ---------- Article ---------- */
+  .article-card{
+    margin: 0 22px 14px; background:var(--white);
+    border-radius:var(--r-md); overflow:hidden;
+    box-shadow:var(--shadow-soft); cursor:pointer;
+    border:1px solid rgba(232,221,212,.5);
+  }
+  .article-img{
+    height: 140px;
+    background: linear-gradient(135deg, var(--lotus-200), var(--brown-300));
+    position:relative;
+  }
+  .article-body{ padding:14px 16px; }
+  .article-body .cat{ font-size:10.5px; letter-spacing:.15em; color:var(--brown-500); font-weight:500; text-transform:uppercase; }
+  .article-body .t{ font-family:'Noto Serif TC', serif; font-size:16px; font-weight:500; margin:6px 0 4px; line-height:1.35; color:var(--ink); }
+  .article-body .s{ font-size:12px; color:var(--ink-mute); line-height:1.5; }
+  .article-meta{
+    display:flex; gap:12px; margin-top:10px;
+    font-size:11px; color:var(--ink-mute);
+  }
+
+  /* ---------- Profile / Membership ---------- */
+  .profile-hero{
+    margin: 12px 22px 18px;
+    border-radius: var(--r-lg);
+    padding: 22px; color:var(--white);
+    background:
+      radial-gradient(circle at 80% 10%, rgba(255,255,255,.2), transparent 60%),
+      linear-gradient(135deg, var(--brown-400), var(--brown-600));
+    position:relative; overflow:hidden;
+  }
+  .profile-hero .lv{ font-size:11px; letter-spacing:.2em; opacity:.85; }
+  .profile-hero .name{ font-family:'Noto Serif TC', serif; font-size:24px; font-weight:500; margin:4px 0; }
+  .profile-hero .pts{ font-family:'Cormorant Garamond', serif; font-size:30px; font-weight:500; }
+  .profile-hero .pts small{ font-size:12px; font-family:'Noto Sans TC', sans-serif; opacity:.8; margin-left:4px; }
+  .profile-deco{ position:absolute; right:-20px; bottom:-30px; width:140px; height:140px; border-radius:50%; background: radial-gradient(circle, rgba(255,255,255,.13), transparent 70%); }
+
+  .menu-list{
+    margin: 0 22px;
+    background:var(--white); border-radius: var(--r-md); overflow:hidden;
+    border:1px solid var(--line);
+  }
+  .menu-item{
+    display:flex; align-items:center; gap:14px; padding: 14px 16px;
+    cursor:pointer; border-bottom:1px solid var(--line);
+  }
+  .menu-item:last-child{ border-bottom:none; }
+  .menu-item .ic{
+    width:34px; height:34px; border-radius:10px;
+    background:var(--lotus-100); color:var(--brown-500);
+    display:flex; align-items:center; justify-content:center;
+  }
+  .menu-item .t{ flex:1; font-size:13.5px; color:var(--ink); }
+  .menu-item .arr{ color:var(--ink-mute); }
+
+  .plan{
+    margin: 12px 22px; padding: 18px;
+    background:var(--white); border-radius: var(--r-md);
+    border:1px solid var(--line);
+  }
+  .plan.featured{
+    background: linear-gradient(135deg, var(--lotus-50), var(--ivory));
+    border-color:var(--lotus-300);
+    box-shadow: var(--shadow-md);
+  }
+  .plan .name{ font-family:'Noto Serif TC', serif; font-size:17px; color:var(--ink); margin-bottom:4px; }
+  .plan .price-row{ display:flex; align-items:baseline; gap:6px; margin: 6px 0 12px; }
+  .plan .price-row .p{ font-family:'Cormorant Garamond', serif; font-size:32px; font-weight:600; color:var(--brown-500); }
+  .plan .price-row .u{ font-size:12px; color:var(--ink-mute); }
+  .plan ul{ list-style:none; padding:0; margin:0 0 14px; }
+  .plan li{ font-size:12.5px; color:var(--ink-soft); padding:5px 0; padding-left:20px; position:relative; }
+  .plan li::before{
+    content:''; position:absolute; left:0; top:11px;
+    width:8px; height:8px; border-radius:50%;
+    background:var(--brown-400);
+  }
+
+  /* ---------- Header / back ---------- */
+  .topbar{
+    display:flex; align-items:center; gap:12px;
+    padding: 10px 22px 8px;
+  }
+  .icon-btn{
+    width:36px; height:36px; border-radius:50%;
+    background:var(--white); border:1px solid var(--line);
+    display:flex; align-items:center; justify-content:center;
+    color:var(--ink); cursor:pointer; box-shadow:var(--shadow-soft);
+  }
+  .topbar h2{
+    flex:1; margin:0; text-align:center;
+    font-family:'Noto Serif TC', serif; font-size:16px; font-weight:500; letter-spacing:.04em;
+  }
+
+  /* ---------- Toast ---------- */
+  .toast{
+    position:absolute; left:50%; bottom:110px;
+    transform: translateX(-50%) translateY(20px);
+    background: rgba(61, 46, 38, .92);
+    color: var(--white);
+    padding: 10px 18px; border-radius: 999px;
+    font-size: 12px; letter-spacing:.05em;
+    opacity:0; pointer-events:none;
+    transition: all .3s ease;
+    z-index: 60;
+    backdrop-filter: blur(10px);
+  }
+  .toast.show{
+    opacity:1; transform: translateX(-50%) translateY(0);
+  }
+
+  /* ---------- Tag chips ---------- */
+  .chips{
+    display:flex; gap:8px; padding: 4px 22px 14px;
+    overflow-x:auto; scrollbar-width:none;
+  }
+  .chips::-webkit-scrollbar{ display:none }
+  .chip{
+    flex-shrink:0; padding: 7px 14px; border-radius: 999px;
+    background: var(--white); color:var(--ink-soft);
+    font-size:12px; cursor:pointer; border:1px solid var(--line);
+  }
+  .chip.active{
+    background: var(--brown-500); color:var(--white); border-color:var(--brown-500);
+  }
+
+  /* ---------- Floating action ---------- */
+  .footer-action{
+    position:absolute; left:0; right:0; bottom:86px;
+    padding: 12px 22px 16px;
+    background: linear-gradient(180deg, transparent, var(--white) 50%);
+  }
+
+  /* ---------- Outside the phone ---------- */
+  .outside-wrap{
+    display:flex; flex-direction:column; align-items:center; gap:14px;
+  }
+  .outside-title{
+    font-family:'Cormorant Garamond', 'Noto Serif TC', serif;
+    font-size: 28px; color: var(--ink); letter-spacing:.04em;
+    text-align:center;
+  }
+  .outside-title em{ color: var(--brown-500); font-style:italic; }
+  .outside-sub{ font-size:13px; color:var(--ink-soft); text-align:center; max-width:380px; line-height:1.7; }
+  .legend{
+    display:flex; flex-wrap:wrap; gap:8px; justify-content:center; max-width:420px;
+  }
+  .legend span{
+    font-size: 11px; color:var(--ink-soft);
+    background:var(--white); padding:6px 12px; border-radius:999px;
+    border:1px solid var(--line);
+  }
+
+  /* ---------- Animations ---------- */
+  @keyframes fadeUp{
+    from{ opacity:0; transform: translateY(8px); }
+    to{ opacity:1; transform: translateY(0); }
+  }
+  .screen.active > * { animation: fadeUp .4s ease both; }
+  .screen.active > *:nth-child(2){ animation-delay:.05s; }
+  .screen.active > *:nth-child(3){ animation-delay:.1s; }
+  .screen.active > *:nth-child(4){ animation-delay:.15s; }
+  .screen.active > *:nth-child(5){ animation-delay:.2s; }
+
+  /* mobile sizing */
+  @media (max-width: 440px){
+    body{ padding: 12px 0; align-items:flex-start; }
+    .phone{ width: 100vw; height: 100vh; border-radius:0; border:none; box-shadow:none; }
+    .notch{ display:none; }
+    .outside-wrap > *:not(.phone){ display:none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="outside-wrap">
+  <div class="outside-title">JUE <em>SPACE</em></div>
+  <div class="outside-sub">身心靈療癒 APP 互動原型 — 含會員、課程、商城、文章、金流。點擊下方各區體驗完整流程。</div>
+
+  <div class="phone">
+    <div class="notch"></div>
+    <div class="status-bar">
+      <div>9:41</div>
+      <div class="icons">
+        <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor"><rect x="0" y="6" width="3" height="5" rx="1"/><rect x="4" y="4" width="3" height="7" rx="1"/><rect x="8" y="2" width="3" height="9" rx="1"/><rect x="12" y="0" width="3" height="11" rx="1"/></svg>
+        <svg width="16" height="11" viewBox="0 0 16 11" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M1 4C4.5 1 11.5 1 15 4M3 6.5C5.5 4.5 10.5 4.5 13 6.5M5 9C6.5 7.5 9.5 7.5 11 9"/></svg>
+        <svg width="24" height="11" viewBox="0 0 24 11" fill="none" stroke="currentColor" stroke-width="1"><rect x="1" y="1" width="20" height="9" rx="2.5"/><rect x="3" y="3" width="14" height="5" rx="1" fill="currentColor"/><rect x="22" y="4" width="1.5" height="3" rx=".5" fill="currentColor"/></svg>
+      </div>
+    </div>
+
+    <div class="screens" id="screens">
+
+      <!-- =========================== WELCOME =========================== -->
+      <section class="screen active" data-screen="welcome">
+        <div class="welcome-bg"></div>
+        <div class="welcome-inner">
+          <div>
+            <div class="logo-mark">JUE</div>
+            <div class="welcome-title">回到<br>內在的 <em>寧靜</em></div>
+            <div class="welcome-sub">引導冥想・能量療癒・心靈課程・正念生活,讓每一次呼吸,都成為回家的路。</div>
+          </div>
+          <div>
+            <button class="btn btn-primary btn-block" onclick="go('login')">開始旅程</button>
+            <button class="btn btn-ghost btn-block" style="margin-top:10px" onclick="go('register')">建立新帳號</button>
+            <div style="text-align:center; margin-top:14px; font-size:11px; color:var(--ink-mute); letter-spacing:.08em;">繼續即代表同意服務條款與隱私權政策</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- =========================== LOGIN =========================== -->
+      <section class="screen" data-screen="login">
+        <div class="topbar">
+          <button class="icon-btn" onclick="go('welcome')">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+          </button>
+          <h2>登入</h2>
+          <div style="width:36px"></div>
+        </div>
+        <div class="page-pad">
+          <div style="text-align:center; margin: 10px 0 22px;">
+            <div class="logo-mark" style="margin: 0 auto 12px;">JUE</div>
+            <div class="serif" style="font-size:20px;">歡迎回來,願你心安</div>
+          </div>
+
+          <div class="field">
+            <label>Email</label>
+            <input type="email" placeholder="you@juespace.app" />
+          </div>
+          <div class="field">
+            <label>密碼</label>
+            <input type="password" placeholder="••••••••" />
+          </div>
+
+          <div style="display:flex; justify-content:space-between; align-items:center; margin: 4px 0 18px;">
+            <label style="font-size:12px; color:var(--ink-soft); display:flex; align-items:center; gap:6px;">
+              <input type="checkbox" style="accent-color: var(--brown-500)" checked /> 記住我
+            </label>
+            <span class="link" onclick="go('forgot')">忘記密碼?</span>
+          </div>
+
+          <button class="btn btn-primary btn-block" onclick="login()">登入</button>
+
+          <div class="divider">或使用社群帳號</div>
+
+          <div class="social-row">
+            <div class="social-btn" onclick="toast('Google 登入中...')">
+              <svg width="20" height="20" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+            </div>
+            <div class="social-btn" onclick="toast('Apple 登入中...')">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="#000"><path d="M17.05 12.04c-.03-3.16 2.58-4.68 2.7-4.75-1.47-2.15-3.76-2.45-4.57-2.48-1.93-.2-3.79 1.15-4.78 1.15-1 0-2.52-1.13-4.15-1.1-2.13.03-4.1 1.24-5.19 3.15-2.22 3.84-.57 9.52 1.59 12.65 1.06 1.53 2.31 3.25 3.95 3.19 1.59-.07 2.19-1.03 4.1-1.03 1.91 0 2.45 1.03 4.13 1 1.7-.03 2.79-1.55 3.83-3.09 1.21-1.77 1.71-3.49 1.74-3.58-.04-.02-3.34-1.28-3.37-5.08zM13.96 2.92c.88-1.07 1.47-2.55 1.31-4.02-1.27.05-2.8.85-3.71 1.91-.81.94-1.52 2.45-1.33 3.89 1.41.11 2.86-.72 3.73-1.78z"/></svg>
+            </div>
+            <div class="social-btn" onclick="toast('Facebook 登入中...')">
+              <svg width="20" height="20" viewBox="0 0 24 24"><path fill="#1877F2" d="M24 12.07C24 5.4 18.63 0 12 0S0 5.4 0 12.07C0 18.1 4.39 23.1 10.13 24v-8.44H7.08v-3.49h3.05V9.41c0-3.02 1.79-4.69 4.53-4.69 1.31 0 2.69.24 2.69.24v2.97h-1.51c-1.49 0-1.96.93-1.96 1.89v2.26h3.33l-.53 3.49h-2.8V24C19.61 23.1 24 18.1 24 12.07z"/></svg>
+            </div>
+            <div class="social-btn" onclick="toast('LINE 登入中...')">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="#06C755"><path d="M19.4 4.6C16.4 1.6 12.5.1 8.4.1 4.3.1.4 1.6-2.6 4.6c-3 3-4.6 6.9-4.6 11 0 4.1 1.6 8 4.6 11 3 3 6.9 4.6 11 4.6.6 0 1.2-.1 1.7-.1.2 0 .4-.1.4-.3 0-.1 0-.2-.1-.2-.6-.6-.5-1.4-.4-2 .1-.4.5-2.5.5-3.4 0-.9-.4-1.6-1.2-2-2.8-1.2-4.7-3.8-4.7-6.7 0-4.2 3.7-7.6 8.3-7.6 4.5 0 8.3 3.4 8.3 7.6 0 4.2-3.7 7.6-8.3 7.6"/><path fill="#06C755" d="M12 2C6.5 2 2 5.6 2 10c0 4 3.6 7.3 8.5 7.9.3 0 .8.2.9.5.1.2 0 .6 0 .8 0 0-.1.7-.1.9 0 .3-.2 1 .9.5s5.7-3.4 7.8-5.8c1.4-1.6 2-3.1 2-4.8C22 5.6 17.5 2 12 2zm-2.6 9.7H7.2c-.3 0-.5-.2-.5-.5V7.5c0-.3.2-.5.5-.5s.5.2.5.5v3.2h1.7c.3 0 .5.2.5.5s-.2.5-.5.5zm2 0c-.3 0-.5-.2-.5-.5V7.5c0-.3.2-.5.5-.5s.5.2.5.5v3.7c0 .3-.2.5-.5.5zm5.1 0c0 .2-.2.4-.4.5h-.1c-.2 0-.3-.1-.4-.2L14 9.4v1.8c0 .3-.2.5-.5.5s-.5-.2-.5-.5V7.5c0-.2.2-.4.4-.5h.1c.1 0 .3.1.4.2l1.8 2.6V7.5c0-.3.2-.5.5-.5s.5.2.5.5v3.7zm2.6-2.4c.3 0 .5.2.5.5s-.2.5-.5.5h-1.2v.9h1.2c.3 0 .5.2.5.5s-.2.5-.5.5h-1.7c-.3 0-.5-.2-.5-.5V7.5c0-.3.2-.5.5-.5h1.7c.3 0 .5.2.5.5s-.2.5-.5.5h-1.2v.9h1.2z"/></svg>
+            </div>
+          </div>
+
+          <div style="text-align:center; margin-top:24px; font-size:13px; color:var(--ink-soft);">
+            還沒有帳號? <span class="link" onclick="go('register')">立即註冊</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- =========================== REGISTER =========================== -->
+      <section class="screen" data-screen="register">
+        <div class="topbar">
+          <button class="icon-btn" onclick="go('welcome')">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+          </button>
+          <h2>建立新帳號</h2>
+          <div style="width:36px"></div>
+        </div>
+        <div class="page-pad">
+          <div class="serif" style="font-size:20px; margin: 10px 0 22px;">展開你的療癒旅程</div>
+
+          <div class="field">
+            <label>姓名</label>
+            <input type="text" placeholder="如何稱呼你?" />
+          </div>
+          <div class="field">
+            <label>Email</label>
+            <input type="email" placeholder="you@juespace.app" />
+          </div>
+          <div class="field">
+            <label>密碼</label>
+            <input type="password" placeholder="至少 8 位,含英數字" />
+          </div>
+          <div class="field">
+            <label>確認密碼</label>
+            <input type="password" placeholder="再輸入一次密碼" />
+          </div>
+
+          <label style="display:flex; align-items:flex-start; gap:8px; font-size:12px; color:var(--ink-soft); line-height:1.6; margin: 8px 0 18px;">
+            <input type="checkbox" style="accent-color: var(--brown-500); margin-top:2px;" />
+            我同意 <span class="link">服務條款</span> 與 <span class="link">隱私權政策</span>,並願意接收電子報。
+          </label>
+
+          <button class="btn btn-primary btn-block" onclick="login()">註冊</button>
+
+          <div style="text-align:center; margin-top:18px; font-size:13px; color:var(--ink-soft);">
+            已經有帳號? <span class="link" onclick="go('login')">登入</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- =========================== FORGOT =========================== -->
+      <section class="screen" data-screen="forgot">
+        <div class="topbar">
+          <button class="icon-btn" onclick="go('login')">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+          </button>
+          <h2>忘記密碼</h2>
+          <div style="width:36px"></div>
+        </div>
+        <div class="page-pad">
+          <div class="serif" style="font-size:20px; margin: 10px 0 6px;">重設你的密碼</div>
+          <div style="font-size:13px; color:var(--ink-soft); line-height:1.7; margin-bottom:22px;">輸入註冊時使用的 Email,我們會寄送密碼重設連結給你。</div>
+
+          <div class="field">
+            <label>Email</label>
+            <input type="email" placeholder="you@juespace.app" />
+          </div>
+
+          <button class="btn btn-primary btn-block" onclick="toast('重設信件已寄出'); setTimeout(()=>go('login'), 1000)">寄出重設信件</button>
+
+          <div style="text-align:center; margin-top:18px; font-size:13px; color:var(--ink-soft);">
+            想起來了? <span class="link" onclick="go('login')">返回登入</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- =========================== HOME =========================== -->
+      <section class="screen" data-screen="home">
+        <div class="home-greet h-row">
+          <div>
+            <div class="greet-name">早安,曉晴</div>
+            <div class="greet-sub">今日是個放慢腳步的好日子 ☁︎</div>
+          </div>
+          <button class="icon-btn" onclick="toast('查看通知')">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+          </button>
+        </div>
+
+        <!-- Carousel -->
+        <div class="carousel">
+          <div class="carousel-track" id="carousel">
+            <div class="slide slide-1">
+              <div class="slide-deco"></div>
+              <div class="slide-tag">每日靜心</div>
+              <div class="slide-title">與內在的<br>溫柔對話</div>
+              <div class="slide-sub">10 分鐘晨間冥想 · 喚醒身心</div>
+            </div>
+            <div class="slide slide-2">
+              <div class="slide-deco"></div>
+              <div class="slide-tag">新課上架</div>
+              <div class="slide-title">脈輪能量<br>平衡入門</div>
+              <div class="slide-sub">12 堂課 · Niko 老師親授</div>
+            </div>
+            <div class="slide slide-3">
+              <div class="slide-deco"></div>
+              <div class="slide-tag">會員專屬</div>
+              <div class="slide-title">月光呼吸法<br>七日體驗</div>
+              <div class="slide-sub">睡前 5 分鐘 · 深層放鬆</div>
+            </div>
+          </div>
+          <div class="dots" id="dots">
+            <span class="active"></span><span></span><span></span>
+          </div>
+        </div>
+
+        <!-- Quick actions -->
+        <div class="quick-grid">
+          <div class="quick" onclick="go('courses')">
+            <div class="quick-ic">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+            </div>
+            <span>課程</span>
+          </div>
+          <div class="quick" onclick="go('shop')">
+            <div class="quick-ic b2">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+            </div>
+            <span>商城</span>
+          </div>
+          <div class="quick" onclick="go('articles')">
+            <div class="quick-ic b3">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+            </div>
+            <span>文章</span>
+          </div>
+          <div class="quick" onclick="go('membership')">
+            <div class="quick-ic b4">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+            </div>
+            <span>會員</span>
+          </div>
+        </div>
+
+        <div style="padding: 0 22px 12px;" class="h-row">
+          <div class="section-title">熱門課程</div>
+          <span class="link" onclick="go('courses')">查看全部 →</span>
+        </div>
+
+        <div class="item" onclick="go('courseDetail')">
+          <div class="item-img ig-1"></div>
+          <div class="item-body">
+            <div>
+              <div class="item-title">脈輪能量平衡入門</div>
+              <div class="item-meta">Niko · 12 堂課 · 中文</div>
+            </div>
+            <div class="item-foot">
+              <span class="pill">熱銷</span>
+              <div class="price">NT$2,880</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="item" onclick="go('courseDetail')">
+          <div class="item-img ig-2"></div>
+          <div class="item-body">
+            <div>
+              <div class="item-title">頌缽聲療深度放鬆</div>
+              <div class="item-meta">月璇 · 8 堂課 · 含音檔</div>
+            </div>
+            <div class="item-foot">
+              <span class="pill brown">會員 8 折</span>
+              <div class="price">NT$1,980</div>
+            </div>
+          </div>
+        </div>
+
+        <div style="padding: 6px 22px 12px;" class="h-row">
+          <div class="section-title">本週靈感</div>
+          <span class="link" onclick="go('articles')">查看全部 →</span>
+        </div>
+
+        <div class="article-card" onclick="go('articleDetail')">
+          <div class="article-img" style="background: linear-gradient(135deg, #E8CCC4, #A88A66);"></div>
+          <div class="article-body">
+            <div class="cat">正念生活</div>
+            <div class="t">當情緒來敲門:七種溫柔的回應方式</div>
+            <div class="s">我們時常以為情緒是干擾,但若願意傾聽,它其實是內在最誠實的訊息...</div>
+            <div class="article-meta">
+              <span>5 分鐘閱讀</span><span>·</span><span>1,248 次閱讀</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- =========================== COURSES =========================== -->
+      <section class="screen" data-screen="courses">
+        <div class="topbar">
+          <div style="width:36px"></div>
+          <h2>課程</h2>
+          <button class="icon-btn" onclick="toast('搜尋課程')">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          </button>
+        </div>
+
+        <div class="chips">
+          <div class="chip active">全部</div>
+          <div class="chip">冥想入門</div>
+          <div class="chip">能量療癒</div>
+          <div class="chip">情緒釋放</div>
+          <div class="chip">睡眠</div>
+          <div class="chip">塔羅</div>
+        </div>
+
+        <div class="item" onclick="go('courseDetail')">
+          <div class="item-img ig-1"></div>
+          <div class="item-body">
+            <div>
+              <div class="item-title">脈輪能量平衡入門</div>
+              <div class="item-meta">Niko · 12 堂課 · 4.9 ★</div>
+            </div>
+            <div class="item-foot">
+              <span class="pill">熱銷</span>
+              <div class="price">NT$2,880</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="item" onclick="go('courseDetail')">
+          <div class="item-img ig-2"></div>
+          <div class="item-body">
+            <div>
+              <div class="item-title">頌缽聲療深度放鬆</div>
+              <div class="item-meta">月璇 · 8 堂課 · 含音檔</div>
+            </div>
+            <div class="item-foot">
+              <span class="pill brown">會員 8 折</span>
+              <div class="price">NT$1,980</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="item" onclick="go('courseDetail')">
+          <div class="item-img ig-3"></div>
+          <div class="item-body">
+            <div>
+              <div class="item-title">每日 10 分鐘正念呼吸</div>
+              <div class="item-meta">小蔓 · 21 天計畫</div>
+            </div>
+            <div class="item-foot">
+              <span class="pill ghost">免費試聽</span>
+              <div class="price">NT$880</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="item" onclick="go('courseDetail')">
+          <div class="item-img ig-4"></div>
+          <div class="item-body">
+            <div>
+              <div class="item-title">水晶療癒實作課</div>
+              <div class="item-meta">Yuna · 6 堂課 · 含實作包</div>
+            </div>
+            <div class="item-foot">
+              <span class="pill">新上架</span>
+              <div class="price">NT$3,680</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="item" onclick="go('courseDetail')">
+          <div class="item-img ig-5"></div>
+          <div class="item-body">
+            <div>
+              <div class="item-title">塔羅自我覺察 30 講</div>
+              <div class="item-meta">星織 · 30 堂課 · 含習作</div>
+            </div>
+            <div class="item-foot">
+              <span class="pill brown">訂閱免費看</span>
+              <div class="price">NT$4,200</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- =========================== COURSE DETAIL =========================== -->
+      <section class="screen" data-screen="courseDetail">
+        <div class="topbar">
+          <button class="icon-btn" onclick="go('courses')">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+          </button>
+          <h2>課程詳情</h2>
+          <button class="icon-btn">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+          </button>
+        </div>
+
+        <div class="hero-img">
+          <div class="play-btn">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+          </div>
+        </div>
+
+        <div class="page-pad">
+          <span class="pill">熱銷課程</span>
+          <h2 class="serif" style="font-size:24px; margin:10px 0 6px; font-weight:500;">脈輪能量平衡入門</h2>
+          <div style="font-size:12px; color:var(--ink-mute); margin-bottom:12px;">Niko 老師 · 12 堂課 · 共 3 小時 28 分</div>
+
+          <div class="h-row" style="margin-bottom:6px;">
+            <div style="font-size:12px; color:var(--ink-soft);">已完成 4 / 12 堂</div>
+            <div style="font-size:12px; color:var(--brown-500); font-weight:500;">33%</div>
+          </div>
+          <div class="progress"><div class="progress-fill" style="width:33%"></div></div>
+
+          <div style="font-size:13.5px; color:var(--ink-soft); line-height:1.8; margin:18px 0 8px;">
+            從七大脈輪的基礎能量原理,到日常自我調頻練習。每堂課皆附引導冥想音檔,陪你逐步建立穩定而流動的能量場。
+          </div>
+
+          <div class="section-title" style="margin: 18px 0 10px;">章節列表</div>
+
+          <div class="chapter done">
+            <div class="num">✓</div>
+            <div class="info">
+              <div class="t">1. 認識你的能量身體</div>
+              <div class="s">15 分鐘 · 已完成</div>
+            </div>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+          </div>
+          <div class="chapter done">
+            <div class="num">✓</div>
+            <div class="info">
+              <div class="t">2. 海底輪:扎根與安全</div>
+              <div class="s">18 分鐘 · 已完成</div>
+            </div>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+          </div>
+          <div class="chapter done">
+            <div class="num">✓</div>
+            <div class="info">
+              <div class="t">3. 臍輪:創造與愉悅</div>
+              <div class="s">16 分鐘 · 已完成</div>
+            </div>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+          </div>
+          <div class="chapter done">
+            <div class="num">✓</div>
+            <div class="info">
+              <div class="t">4. 太陽神經叢:自信與意志</div>
+              <div class="s">19 分鐘 · 已完成</div>
+            </div>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+          </div>
+          <div class="chapter">
+            <div class="num">5</div>
+            <div class="info">
+              <div class="t">5. 心輪:愛與連結</div>
+              <div class="s">22 分鐘 · 下一堂</div>
+            </div>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><polyline points="9 18 15 12 9 6"/></svg>
+          </div>
+          <div class="chapter">
+            <div class="num">6</div>
+            <div class="info">
+              <div class="t">6. 喉輪:表達與真實</div>
+              <div class="s">17 分鐘</div>
+            </div>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><polyline points="9 18 15 12 9 6"/></svg>
+          </div>
+          <div class="chapter">
+            <div class="num">7</div>
+            <div class="info">
+              <div class="t">7. 眉心輪:直覺與洞察</div>
+              <div class="s">20 分鐘 · 🔒 購買後解鎖</div>
+            </div>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+          </div>
+
+          <div style="margin: 24px 0 8px;" class="h-row">
+            <div>
+              <div style="font-size:11px; color:var(--ink-mute); letter-spacing:.08em;">課程價格</div>
+              <div style="font-family:'Cormorant Garamond', serif; font-size:30px; color:var(--brown-500); font-weight:600;">NT$2,880</div>
+            </div>
+            <button class="btn btn-primary" onclick="go('cart')">加入購物車</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- =========================== SHOP =========================== -->
+      <section class="screen" data-screen="shop">
+        <div class="topbar">
+          <div style="width:36px"></div>
+          <h2>商城</h2>
+          <button class="icon-btn" onclick="go('cart')" style="position:relative">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+            <span style="position:absolute; top:-2px; right:-2px; background: var(--brown-500); color:#fff; font-size:10px; width:16px; height:16px; border-radius:50%; display:flex; align-items:center; justify-content:center;">2</span>
+          </button>
+        </div>
+
+        <div class="chips">
+          <div class="chip active">全部</div>
+          <div class="chip">實體商品</div>
+          <div class="chip">數位商品</div>
+          <div class="chip">課程</div>
+          <div class="chip">訂閱方案</div>
+        </div>
+
+        <div class="product-grid">
+          <div class="product" onclick="go('productDetail')">
+            <div class="product-img p1"></div>
+            <div class="product-info">
+              <div class="t">月光石手作項鍊</div>
+              <div class="s">實體 · 含布袋包裝</div>
+              <div class="p">NT$1,580</div>
+            </div>
+          </div>
+          <div class="product" onclick="go('productDetail')">
+            <div class="product-img p2"></div>
+            <div class="product-info">
+              <div class="t">引導冥想音檔組</div>
+              <div class="s">數位 · 30 軌 MP3</div>
+              <div class="p">NT$680</div>
+            </div>
+          </div>
+          <div class="product" onclick="go('productDetail')">
+            <div class="product-img p3"></div>
+            <div class="product-info">
+              <div class="t">玫瑰白茶療癒香氛</div>
+              <div class="s">實體 · 100ml</div>
+              <div class="p">NT$1,280</div>
+            </div>
+          </div>
+          <div class="product" onclick="go('productDetail')">
+            <div class="product-img p4"></div>
+            <div class="product-info">
+              <div class="t">脈輪能量療癒課程</div>
+              <div class="s">課程 · 12 堂</div>
+              <div class="p">NT$2,880</div>
+            </div>
+          </div>
+          <div class="product" onclick="go('productDetail')">
+            <div class="product-img p1"></div>
+            <div class="product-info">
+              <div class="t">手作木質頌缽 5寸</div>
+              <div class="s">實體 · 含敲棒</div>
+              <div class="p">NT$3,480</div>
+            </div>
+          </div>
+          <div class="product" onclick="go('productDetail')">
+            <div class="product-img p2"></div>
+            <div class="product-info">
+              <div class="t">月歷正念手帳 2026</div>
+              <div class="s">實體 · A5 規格</div>
+              <div class="p">NT$890</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- =========================== PRODUCT DETAIL =========================== -->
+      <section class="screen" data-screen="productDetail">
+        <div class="topbar">
+          <button class="icon-btn" onclick="go('shop')">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+          </button>
+          <h2>商品詳情</h2>
+          <button class="icon-btn">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+          </button>
+        </div>
+
+        <div class="hero-img" style="background: linear-gradient(135deg, #E8CCC4, #8B6F4E);"></div>
+
+        <div class="page-pad">
+          <span class="pill">實體商品</span>
+          <h2 class="serif" style="font-size:22px; margin:10px 0 4px; font-weight:500;">月光石手作項鍊</h2>
+          <div style="display:flex; align-items:center; gap:10px; font-size:12px; color:var(--ink-mute); margin-bottom:12px;">
+            <span>★ 4.9</span><span>·</span><span>238 則評價</span><span>·</span><span>庫存 12 件</span>
+          </div>
+
+          <div style="font-size:13.5px; color:var(--ink-soft); line-height:1.8; margin: 10px 0 18px;">
+            月光石象徵直覺與女性能量,由花蓮工坊以 925 純銀手工包鑲,搭配可調節絲質頸繩。隨產品附贈淨化指引與絨布收納袋。
+          </div>
+
+          <div class="section-title" style="margin-bottom:8px;">材質規格</div>
+          <div style="display:flex; flex-wrap:wrap; gap:8px; margin-bottom:18px;">
+            <span class="pill ghost">925 純銀</span>
+            <span class="pill ghost">天然月光石</span>
+            <span class="pill ghost">手工製作</span>
+            <span class="pill ghost">附淨化包</span>
+          </div>
+
+          <div style="background:var(--cream); padding:14px 16px; border-radius:14px; margin-bottom: 18px;">
+            <div style="font-size:12px; color:var(--ink-mute); margin-bottom:6px;">配送與發票</div>
+            <div style="font-size:12.5px; color:var(--ink-soft); line-height:1.7;">
+              黑貓宅配 60-120 元 · 滿千免運<br/>
+              電子發票 / 三聯式統編
+            </div>
+          </div>
+
+          <div style="margin: 12px 0 8px;" class="h-row">
+            <div>
+              <div style="font-size:11px; color:var(--ink-mute); letter-spacing:.08em;">售價</div>
+              <div style="font-family:'Cormorant Garamond', serif; font-size:30px; color:var(--brown-500); font-weight:600;">NT$1,580</div>
+            </div>
+            <button class="btn btn-primary" onclick="go('cart')">加入購物車</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- =========================== CART =========================== -->
+      <section class="screen" data-screen="cart">
+        <div class="topbar">
+          <button class="icon-btn" onclick="go('shop')">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+          </button>
+          <h2>購物車</h2>
+          <div style="width:36px"></div>
+        </div>
+
+        <div class="page-pad">
+          <div class="cart-row">
+            <div class="item-img ig-1"></div>
+            <div class="item-body">
+              <div>
+                <div class="item-title">月光石手作項鍊</div>
+                <div class="item-meta">925 純銀 · 約 45cm</div>
+              </div>
+              <div class="item-foot">
+                <div class="qty"><button>−</button><span>1</span><button>+</button></div>
+                <div class="price">NT$1,580</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="cart-row">
+            <div class="item-img ig-3"></div>
+            <div class="item-body">
+              <div>
+                <div class="item-title">引導冥想音檔組</div>
+                <div class="item-meta">數位下載 · 30 軌</div>
+              </div>
+              <div class="item-foot">
+                <div class="qty"><button>−</button><span>1</span><button>+</button></div>
+                <div class="price">NT$680</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Coupon -->
+          <div style="display:flex; gap:8px; margin: 14px 0 16px;">
+            <input type="text" placeholder="輸入折扣碼" style="flex:1; padding:12px 14px; border:1px solid var(--line); border-radius:12px; background:var(--white); font-family:inherit; font-size:13px;" />
+            <button class="btn btn-secondary" style="padding: 12px 18px;" onclick="toast('折扣碼已套用 −NT$200')">套用</button>
+          </div>
+
+          <div class="summary">
+            <div><span>商品小計</span><span>NT$2,260</span></div>
+            <div><span>運費</span><span>NT$80</span></div>
+            <div><span>折扣碼 WELCOME200</span><span style="color:var(--brown-500)">−NT$200</span></div>
+            <div class="total"><span>總計</span><span class="price">NT$2,140</span></div>
+          </div>
+
+          <button class="btn btn-primary btn-block" style="margin-top:16px;" onclick="go('checkout')">前往結帳</button>
+        </div>
+      </section>
+
+      <!-- =========================== CHECKOUT =========================== -->
+      <section class="screen" data-screen="checkout">
+        <div class="topbar">
+          <button class="icon-btn" onclick="go('cart')">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+          </button>
+          <h2>結帳</h2>
+          <div style="width:36px"></div>
+        </div>
+
+        <div class="page-pad">
+          <div class="section-title" style="margin-bottom:10px;">選擇付款方式</div>
+
+          <div class="pay-method active" onclick="selectPay(this)">
+            <div class="logo" style="background:#0a8b3a; color:#fff;">綠界</div>
+            <div style="flex:1">
+              <div class="t">綠界科技</div>
+              <div class="s">信用卡 · 超商代碼 · ATM</div>
+            </div>
+            <div class="radio"></div>
+          </div>
+
+          <div class="pay-method" onclick="selectPay(this)">
+            <div class="logo" style="background:#005bac; color:#fff;">藍新</div>
+            <div style="flex:1">
+              <div class="t">藍新金流</div>
+              <div class="s">信用卡 · 分期 · WebATM</div>
+            </div>
+            <div class="radio"></div>
+          </div>
+
+          <div class="pay-method" onclick="selectPay(this)">
+            <div class="logo" style="background:#06C755; color:#fff; font-size:14px;">LINE</div>
+            <div style="flex:1">
+              <div class="t">LINE PAY</div>
+              <div class="s">綁定 LINE 一鍵付款</div>
+            </div>
+            <div class="radio"></div>
+          </div>
+
+          <div class="pay-method" onclick="selectPay(this)">
+            <div class="logo" style="background:#FF5733; color:#fff;">街口</div>
+            <div style="flex:1">
+              <div class="t">街口支付</div>
+              <div class="s">街口幣 · 街口支付</div>
+            </div>
+            <div class="radio"></div>
+          </div>
+
+          <div class="pay-method" onclick="selectPay(this)">
+            <div class="logo" style="background:#000; color:#fff;">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M17.05 12.04c-.03-3.16 2.58-4.68 2.7-4.75-1.47-2.15-3.76-2.45-4.57-2.48-1.93-.2-3.79 1.15-4.78 1.15-1 0-2.52-1.13-4.15-1.1-2.13.03-4.1 1.24-5.19 3.15-2.22 3.84-.57 9.52 1.59 12.65 1.06 1.53 2.31 3.25 3.95 3.19 1.59-.07 2.19-1.03 4.1-1.03 1.91 0 2.45 1.03 4.13 1 1.7-.03 2.79-1.55 3.83-3.09 1.21-1.77 1.71-3.49 1.74-3.58-.04-.02-3.34-1.28-3.37-5.08z"/></svg>
+            </div>
+            <div style="flex:1">
+              <div class="t">Apple Pay</div>
+              <div class="s">Touch ID / Face ID 快速付款</div>
+            </div>
+            <div class="radio"></div>
+          </div>
+
+          <div class="pay-method" onclick="selectPay(this)">
+            <div class="logo" style="background:#fff; border:1px solid var(--line);">
+              <svg width="22" height="22" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+            </div>
+            <div style="flex:1">
+              <div class="t">Google Pay</div>
+              <div class="s">綁定信用卡快速付款</div>
+            </div>
+            <div class="radio"></div>
+          </div>
+
+          <div class="pay-method" onclick="selectPay(this)">
+            <div class="logo" style="background:#003087; color:#fff;">PayPal</div>
+            <div style="flex:1">
+              <div class="t">PayPal</div>
+              <div class="s">國際付款 · 支援多幣別</div>
+            </div>
+            <div class="radio"></div>
+          </div>
+
+          <div class="pay-method" onclick="selectPay(this)">
+            <div class="logo" style="background:#1677ff; color:#fff;">支付寶</div>
+            <div style="flex:1">
+              <div class="t">支付寶 Alipay</div>
+              <div class="s">大陸地區付款</div>
+            </div>
+            <div class="radio"></div>
+          </div>
+
+          <div class="section-title" style="margin: 18px 0 10px;">發票資訊</div>
+          <div style="display:flex; gap:8px; margin-bottom: 14px;">
+            <div class="chip active" style="flex:1; text-align:center;">電子發票</div>
+            <div class="chip" style="flex:1; text-align:center;">捐贈發票</div>
+            <div class="chip" style="flex:1; text-align:center;">三聯式</div>
+          </div>
+
+          <div class="summary" style="margin-bottom:16px;">
+            <div><span>商品小計</span><span>NT$2,260</span></div>
+            <div><span>運費</span><span>NT$80</span></div>
+            <div><span>折扣</span><span style="color:var(--brown-500)">−NT$200</span></div>
+            <div class="total"><span>應付總計</span><span class="price">NT$2,140</span></div>
+          </div>
+
+          <button class="btn btn-primary btn-block" onclick="toast('付款成功 ❀ 感謝你');setTimeout(()=>go('home'), 1200)">確認付款</button>
+          <div style="text-align:center; font-size:11px; color:var(--ink-mute); margin-top:10px; letter-spacing:.08em;">🔒 SSL 加密保護你的交易資訊</div>
+        </div>
+      </section>
+
+      <!-- =========================== ARTICLES =========================== -->
+      <section class="screen" data-screen="articles">
+        <div class="topbar">
+          <div style="width:36px"></div>
+          <h2>文章</h2>
+          <button class="icon-btn">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          </button>
+        </div>
+
+        <div class="chips">
+          <div class="chip active">全部</div>
+          <div class="chip">正念生活</div>
+          <div class="chip">能量療癒</div>
+          <div class="chip">塔羅占星</div>
+          <div class="chip">電子報</div>
+          <div class="chip">教學</div>
+        </div>
+
+        <div class="article-card" onclick="go('articleDetail')">
+          <div class="article-img" style="background: linear-gradient(135deg, #E8CCC4, #A88A66);"></div>
+          <div class="article-body">
+            <div class="cat">正念生活 · 編輯精選</div>
+            <div class="t">當情緒來敲門:七種溫柔的回應方式</div>
+            <div class="s">我們時常以為情緒是干擾,但若願意傾聽,它其實是內在最誠實的訊息...</div>
+            <div class="article-meta"><span>5 分鐘閱讀</span><span>·</span><span>1,248 次閱讀</span></div>
+          </div>
+        </div>
+
+        <div class="article-card" onclick="go('articleDetail')">
+          <div class="article-img" style="background: linear-gradient(135deg, #D6BFA6, #8B6F4E);"></div>
+          <div class="article-body">
+            <div class="cat">能量療癒</div>
+            <div class="t">脈輪初學者指南:從身體到能量場</div>
+            <div class="s">每一個脈輪都對應著生命中的不同主題。本文將帶你認識七大脈輪的角色...</div>
+            <div class="article-meta"><span>8 分鐘閱讀</span><span>·</span><span>892 次閱讀</span></div>
+          </div>
+        </div>
+
+        <div class="article-card" onclick="go('articleDetail')">
+          <div class="article-img" style="background: linear-gradient(135deg, #F2E2DC, #B89690);"></div>
+          <div class="article-body">
+            <div class="cat">塔羅占星 · 月報</div>
+            <div class="t">2026 立夏月運:在轉化中重生</div>
+            <div class="s">這個月的能量像一條深河,邀請我們放下那些不再屬於自己的故事...</div>
+            <div class="article-meta"><span>6 分鐘閱讀</span><span>·</span><span>2,103 次閱讀</span></div>
+          </div>
+        </div>
+
+        <div class="article-card" onclick="go('articleDetail')">
+          <div class="article-img" style="background: linear-gradient(135deg, #EADBC9, #6B5238);"></div>
+          <div class="article-body">
+            <div class="cat">教學 · SEO 精選</div>
+            <div class="t">每日 5 分鐘呼吸練習:科學與心靈的交會</div>
+            <div class="s">研究證實,規律的橫膈膜呼吸能顯著降低焦慮指數。本文整理三種你可以馬上嘗試的方法...</div>
+            <div class="article-meta"><span>4 分鐘閱讀</span><span>·</span><span>3,560 次閱讀</span></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- =========================== ARTICLE DETAIL =========================== -->
+      <section class="screen" data-screen="articleDetail">
+        <div class="topbar">
+          <button class="icon-btn" onclick="go('articles')">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+          </button>
+          <h2>閱讀</h2>
+          <button class="icon-btn">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+          </button>
+        </div>
+
+        <div class="hero-img" style="background: linear-gradient(135deg, #E8CCC4, #A88A66);"></div>
+
+        <div class="page-pad">
+          <span class="pill">正念生活 · 編輯精選</span>
+          <h1 class="serif" style="font-size:24px; line-height:1.4; margin: 12px 0 8px; font-weight:500;">當情緒來敲門:七種溫柔的回應方式</h1>
+          <div style="display:flex; gap:10px; align-items:center; font-size:12px; color:var(--ink-mute); margin-bottom:18px;">
+            <div style="width:24px; height:24px; border-radius:50%; background: var(--lotus-300);"></div>
+            <span>曉晴 編輯</span><span>·</span><span>2026.05.08</span><span>·</span><span>5 分鐘</span>
+          </div>
+
+          <div style="font-size:14px; line-height:2; color:var(--ink-soft);">
+            我們時常以為情緒是干擾,是必須被處理掉的問題。但若願意停下來傾聽,它其實是內在最誠實的訊息——告訴我們有些東西正在發生,某個需要被看見的部分。<br/><br/>
+            這篇文章想與你分享七種溫柔回應情緒的方式。它們不是公式,而是邀請。試著挑一兩個今天就能練習的,讓情緒成為朋友,而非敵人。<br/><br/>
+            <strong style="color:var(--brown-500);">一、先呼吸,再回應</strong><br/>
+            在被情緒淹沒的當下,試著做三次深長的呼吸。讓神經系統有片刻喘息,你會發現,反應與回應之間,其實有一個珍貴的空隙。<br/><br/>
+            <strong style="color:var(--brown-500);">二、命名情緒</strong><br/>
+            「我現在感到挫折」「我有些害怕」——只是把感受說出來,就能降低杏仁核的活躍程度。語言,有溫柔包覆情緒的力量。
+          </div>
+
+          <div style="background:var(--lotus-50); padding: 14px 16px; border-radius:14px; margin: 20px 0;">
+            <div style="font-size:12px; color:var(--brown-500); letter-spacing:.1em; margin-bottom:4px;">電子報訂閱</div>
+            <div style="font-size:13px; color:var(--ink); line-height:1.6; margin-bottom:10px;">每週收到一封來自 JUE SPACE 的溫柔信件,陪你回到自己。</div>
+            <div style="display:flex; gap:8px;">
+              <input type="email" placeholder="你的 Email" style="flex:1; padding:10px 12px; background:var(--white); border:none; border-radius:10px; font-size:12.5px; font-family:inherit;" />
+              <button class="btn btn-primary" style="padding: 10px 16px; font-size:12px;">訂閱</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- =========================== MEMBERSHIP / PROFILE =========================== -->
+      <section class="screen" data-screen="membership">
+        <div class="topbar">
+          <div style="width:36px"></div>
+          <h2>會員中心</h2>
+          <button class="icon-btn" onclick="go('settings')">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+          </button>
+        </div>
+
+        <div class="profile-hero">
+          <div class="profile-deco"></div>
+          <div class="lv">VIP 會員 · 璞玉等級</div>
+          <div class="name">曉晴 ❀</div>
+          <div style="margin-top:14px; display:flex; justify-content:space-between; align-items:flex-end;">
+            <div>
+              <div style="font-size:11px; opacity:.8; letter-spacing:.1em;">累積點數</div>
+              <div class="pts">2,480 <small>pts</small></div>
+            </div>
+            <div style="font-size:11px; opacity:.85; text-align:right;">下一階段<br/><strong style="font-size:13px;">水晶級</strong> · 還差 520 pts</div>
+          </div>
+        </div>
+
+        <div style="padding: 0 22px 8px;" class="h-row">
+          <div class="section-title">訂閱方案</div>
+          <span class="link">管理訂閱</span>
+        </div>
+
+        <div class="plan featured">
+          <div class="h-row">
+            <div class="name">靈感年訂方案</div>
+            <span class="pill">最划算</span>
+          </div>
+          <div class="price-row">
+            <div class="p">NT$2,880</div>
+            <div class="u">/ 年 · 約 NT$240 / 月</div>
+          </div>
+          <ul>
+            <li>所有課程無限觀看</li>
+            <li>每月新文章 & 冥想音檔</li>
+            <li>線上活動會員價</li>
+            <li>商城全品項 9 折</li>
+          </ul>
+          <button class="btn btn-primary btn-block" onclick="toast('訂閱方案已選擇')">立即訂閱</button>
+        </div>
+
+        <div class="plan">
+          <div class="name">月訂方案</div>
+          <div class="price-row">
+            <div class="p">NT$380</div>
+            <div class="u">/ 月</div>
+          </div>
+          <ul>
+            <li>所有課程無限觀看</li>
+            <li>每月新文章 & 冥想音檔</li>
+            <li>可隨時取消</li>
+          </ul>
+          <button class="btn btn-secondary btn-block">選擇此方案</button>
+        </div>
+
+        <div style="padding: 12px 22px 8px;">
+          <div class="section-title">帳號設定</div>
+        </div>
+        <div class="menu-list" style="margin-bottom:14px;">
+          <div class="menu-item" onclick="toast('我的課程')">
+            <div class="ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><polygon points="5 3 19 12 5 21 5 3"/></svg></div>
+            <div class="t">我的課程</div>
+            <span class="pill brown">4 門進行中</span>
+            <svg class="arr" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><polyline points="9 18 15 12 9 6"/></svg>
+          </div>
+          <div class="menu-item" onclick="toast('訂單記錄')">
+            <div class="ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
+            <div class="t">訂單記錄</div>
+            <svg class="arr" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><polyline points="9 18 15 12 9 6"/></svg>
+          </div>
+          <div class="menu-item" onclick="toast('收藏清單')">
+            <div class="ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></div>
+            <div class="t">收藏清單</div>
+            <svg class="arr" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><polyline points="9 18 15 12 9 6"/></svg>
+          </div>
+          <div class="menu-item" onclick="toast('通知設定')">
+            <div class="ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg></div>
+            <div class="t">通知設定</div>
+            <svg class="arr" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><polyline points="9 18 15 12 9 6"/></svg>
+          </div>
+          <div class="menu-item" onclick="go('settings')">
+            <div class="ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0z"/><path d="M12 8v4l2.5 2.5"/></svg></div>
+            <div class="t">後台管理</div>
+            <span class="pill ghost">Admin</span>
+            <svg class="arr" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><polyline points="9 18 15 12 9 6"/></svg>
+          </div>
+        </div>
+      </section>
+
+      <!-- =========================== SETTINGS / ADMIN =========================== -->
+      <section class="screen" data-screen="settings">
+        <div class="topbar">
+          <button class="icon-btn" onclick="go('membership')">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+          </button>
+          <h2>後台 & 數據</h2>
+          <div style="width:36px"></div>
+        </div>
+
+        <div class="page-pad">
+          <div class="serif" style="font-size:18px; margin-bottom: 14px;">本月概覽</div>
+
+          <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-bottom: 18px;">
+            <div class="card" style="padding: 14px;">
+              <div style="font-size:11px; color:var(--ink-mute); letter-spacing:.08em;">會員人數</div>
+              <div style="font-family:'Cormorant Garamond', serif; font-size:28px; font-weight:600; color:var(--brown-500); margin-top:2px;">12,480</div>
+              <div style="font-size:11px; color:#5b8a3a;">↑ 8.2% 本月</div>
+            </div>
+            <div class="card" style="padding: 14px;">
+              <div style="font-size:11px; color:var(--ink-mute); letter-spacing:.08em;">本月營收</div>
+              <div style="font-family:'Cormorant Garamond', serif; font-size:28px; font-weight:600; color:var(--brown-500); margin-top:2px;">$385K</div>
+              <div style="font-size:11px; color:#5b8a3a;">↑ 12.4% 本月</div>
+            </div>
+            <div class="card" style="padding: 14px;">
+              <div style="font-size:11px; color:var(--ink-mute); letter-spacing:.08em;">課程完成率</div>
+              <div style="font-family:'Cormorant Garamond', serif; font-size:28px; font-weight:600; color:var(--brown-500); margin-top:2px;">68%</div>
+              <div style="font-size:11px; color:#5b8a3a;">↑ 3.1%</div>
+            </div>
+            <div class="card" style="padding: 14px;">
+              <div style="font-size:11px; color:var(--ink-mute); letter-spacing:.08em;">活躍訂閱</div>
+              <div style="font-family:'Cormorant Garamond', serif; font-size:28px; font-weight:600; color:var(--brown-500); margin-top:2px;">3,205</div>
+              <div style="font-size:11px; color:#5b8a3a;">↑ 5.6%</div>
+            </div>
+          </div>
+
+          <!-- mini chart -->
+          <div class="card" style="padding:16px; margin-bottom: 18px;">
+            <div class="h-row" style="margin-bottom: 12px;">
+              <div style="font-size:13px; color:var(--ink); font-weight:500;">近 7 日營收</div>
+              <span style="font-size:11px; color:var(--ink-mute);">單位:NT$</span>
+            </div>
+            <svg viewBox="0 0 280 90" width="100%" style="display:block;">
+              <defs>
+                <linearGradient id="g1" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stop-color="#A88A66" stop-opacity=".5"/>
+                  <stop offset="100%" stop-color="#A88A66" stop-opacity="0"/>
+                </linearGradient>
+              </defs>
+              <path d="M0 70 L40 50 L80 55 L120 30 L160 38 L200 20 L240 25 L280 12 L280 90 L0 90 Z" fill="url(#g1)"/>
+              <path d="M0 70 L40 50 L80 55 L120 30 L160 38 L200 20 L240 25 L280 12" fill="none" stroke="#8B6F4E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              <circle cx="280" cy="12" r="3.5" fill="#8B6F4E"/>
+            </svg>
+            <div style="display:flex; justify-content:space-between; margin-top:8px; font-size:10px; color:var(--ink-mute);">
+              <span>05/05</span><span>05/06</span><span>05/07</span><span>05/08</span><span>05/09</span><span>05/10</span><span>05/11</span>
+            </div>
+          </div>
+
+          <div class="section-title" style="margin-bottom: 10px;">管理功能</div>
+          <div class="menu-list">
+            <div class="menu-item" onclick="toast('課程管理')">
+              <div class="ic" style="background:var(--brown-100); color:var(--brown-600);">📚</div>
+              <div class="t">課程 & LMS 管理</div>
+              <svg class="arr" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><polyline points="9 18 15 12 9 6"/></svg>
+            </div>
+            <div class="menu-item" onclick="toast('商品庫存')">
+              <div class="ic">🛍️</div>
+              <div class="t">商品 & 庫存管理</div>
+              <svg class="arr" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><polyline points="9 18 15 12 9 6"/></svg>
+            </div>
+            <div class="menu-item" onclick="toast('文章 CMS')">
+              <div class="ic" style="background:var(--lotus-200);">✍️</div>
+              <div class="t">文章 CMS</div>
+              <svg class="arr" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><polyline points="9 18 15 12 9 6"/></svg>
+            </div>
+            <div class="menu-item" onclick="toast('折扣碼設定')">
+              <div class="ic" style="background:var(--ivory);">🎟️</div>
+              <div class="t">折扣碼 & 行銷</div>
+              <svg class="arr" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><polyline points="9 18 15 12 9 6"/></svg>
+            </div>
+            <div class="menu-item" onclick="toast('金流設定')">
+              <div class="ic" style="background:var(--brown-100);">💳</div>
+              <div class="t">金流串接設定</div>
+              <svg class="arr" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><polyline points="9 18 15 12 9 6"/></svg>
+            </div>
+            <div class="menu-item" onclick="toast('AI 個人化推薦(規劃中)')">
+              <div class="ic" style="background:linear-gradient(135deg, var(--lotus-200), var(--brown-200));">✨</div>
+              <div class="t">AI 個人化推薦</div>
+              <span class="pill">Beta</span>
+              <svg class="arr" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><polyline points="9 18 15 12 9 6"/></svg>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </div>
+
+    <!-- ============ BOTTOM TAB BAR ============ -->
+    <div class="tabbar" id="tabbar">
+      <button class="tab active" data-tab="home" onclick="go('home')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+        <span>首頁</span>
+      </button>
+      <button class="tab" data-tab="courses" onclick="go('courses')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+        <span>課程</span>
+      </button>
+      <button class="tab" data-tab="shop" onclick="go('shop')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+        <span>商城</span>
+      </button>
+      <button class="tab" data-tab="articles" onclick="go('articles')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+        <span>文章</span>
+      </button>
+      <button class="tab" data-tab="membership" onclick="go('membership')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        <span>我的</span>
+      </button>
+    </div>
+
+    <div class="toast" id="toast"></div>
+  </div>
+
+  <div class="legend">
+    <span>淡藕色 #D9B8B0</span>
+    <span>白色 #FAF6F2</span>
+    <span>淺棕色 #A88A66</span>
+    <span>輪播功能</span>
+    <span>會員 / 訂閱</span>
+    <span>LMS 課程</span>
+    <span>購物商城</span>
+    <span>CMS 文章</span>
+    <span>多元金流</span>
+    <span>後台 & 數據</span>
+  </div>
+</div>
+
+<script>
+  // ---- Navigation ----
+  const tabsByScreen = {
+    home:'home', courses:'courses', courseDetail:'courses',
+    shop:'shop', productDetail:'shop', cart:'shop', checkout:'shop',
+    articles:'articles', articleDetail:'articles',
+    membership:'membership', settings:'membership'
+  };
+
+  function go(name){
+    document.querySelectorAll('.screen').forEach(s=>{
+      s.classList.toggle('active', s.dataset.screen===name);
+    });
+    // scroll to top of active screen
+    const active = document.querySelector('.screen.active');
+    if(active) active.scrollTop = 0;
+
+    // tab bar visibility
+    const hideTabsOn = ['welcome','login','register','forgot'];
+    document.getElementById('tabbar').style.display = hideTabsOn.includes(name) ? 'none' : 'flex';
+
+    // update tab active
+    const tabName = tabsByScreen[name];
+    document.querySelectorAll('.tab').forEach(t=>{
+      t.classList.toggle('active', t.dataset.tab===tabName);
+    });
+  }
+
+  function login(){
+    toast('登入成功 ❀');
+    setTimeout(()=>go('home'), 800);
+  }
+
+  function selectPay(el){
+    document.querySelectorAll('.pay-method').forEach(p=>p.classList.remove('active'));
+    el.classList.add('active');
+  }
+
+  // ---- Toast ----
+  let toastTimer;
+  function toast(msg){
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(()=> t.classList.remove('show'), 1800);
+  }
+
+  // ---- Carousel auto-rotate + dots ----
+  const track = document.getElementById('carousel');
+  const dots = document.querySelectorAll('#dots span');
+  let slideIdx = 0;
+  const slideCount = 3;
+
+  function goToSlide(i, smooth=true){
+    slideIdx = (i + slideCount) % slideCount;
+    const slide = track.children[slideIdx];
+    track.scrollTo({ left: slide.offsetLeft - track.offsetLeft - 4, behavior: smooth ? 'smooth' : 'auto' });
+    dots.forEach((d, idx)=> d.classList.toggle('active', idx===slideIdx));
+  }
+
+  // auto-rotate
+  let autoTimer = setInterval(()=>{
+    if(document.querySelector('.screen.active').dataset.screen === 'home'){
+      goToSlide(slideIdx+1);
+    }
+  }, 4000);
+
+  // detect manual scroll → update dots
+  let scrollTimer;
+  track.addEventListener('scroll', ()=>{
+    clearTimeout(scrollTimer);
+    scrollTimer = setTimeout(()=>{
+      const slideWidth = track.children[0].offsetWidth + 14;
+      const idx = Math.round(track.scrollLeft / slideWidth);
+      slideIdx = Math.max(0, Math.min(slideCount-1, idx));
+      dots.forEach((d, i)=> d.classList.toggle('active', i===slideIdx));
+    }, 100);
+  });
+
+  // tap dots
+  dots.forEach((d, i)=> d.addEventListener('click', ()=> goToSlide(i)));
+</script>
+
+</body>
+</html>
